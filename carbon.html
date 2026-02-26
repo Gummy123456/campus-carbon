@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>碳衡·校园碳中和智能管家</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background: #f5f9fa;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e88e5;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .section h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            border-left: 4px solid #2e7d32;
+            padding-left: 10px;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .btn {
+            background: #1e88e5;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background: #1565c0;
+        }
+        .result-box {
+            background: #f1f8e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            line-height: 1.7;
+        }
+        .ai-box {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            line-height: 1.7;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="title">碳衡·校园碳中和智能管家</div>
+    <div class="subtitle">Campus Carbon Neutrality AI Manager</div>
+
+    <!-- 数据采集模块 -->
+    <div class="section">
+        <h3>一、校园能耗数据采集</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label>校园用电量（度）</label>
+                <input type="number" id="elec" placeholder="请输入用电量">
+            </div>
+            <div class="form-group">
+                <label>校园用水量（吨）</label>
+                <input type="number" id="water" placeholder="请输入用水量">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>空调开启时长（小时）</label>
+                <input type="number" id="air" placeholder="空调时长">
+            </div>
+            <div class="form-group">
+                <label>食堂餐厨垃圾（公斤）</label>
+                <input type="number" id="food" placeholder="餐厨垃圾">
+            </div>
+        </div>
+        <br>
+        <button class="btn" onclick="calcCarbon()">开始碳核算 → 生成报告</button>
+    </div>
+
+    <!-- 碳核算结果 -->
+    <div class="section">
+        <h3>二、碳排放核算报告</h3>
+        <div id="result" class="result-box" style="display:none;"></div>
+    </div>
+
+    <!-- AI节能方案 -->
+    <div class="section">
+        <h3>三、AI智能节能方案</h3>
+        <div id="aiSuggest" class="ai-box" style="display:none;"></div>
+    </div>
+</div>
+
+<script>
+// 国家碳排放因子（通用校园版）
+const EF_ELEC = 0.583;    // 用电碳排放因子 kgCO₂/度
+const EF_WATER = 0.91;    // 用水碳排放因子 kgCO₂/吨
+const EF_AIR = 0.28;      // 空调每小时碳排放
+const EF_FOOD = 2.3;      // 餐厨垃圾碳排放
+
+function calcCarbon() {
+    // 获取输入
+    let elec = parseFloat(document.getElementById("elec").value) || 0;
+    let water = parseFloat(document.getElementById("water").value) || 0;
+    let air = parseFloat(document.getElementById("air").value) || 0;
+    let food = parseFloat(document.getElementById("food").value) || 0;
+
+    // 计算各项碳排放
+    let carbonElec = elec * EF_ELEC;
+    let carbonWater = water * EF_WATER;
+    let carbonAir = air * EF_AIR;
+    let carbonFood = food * EF_FOOD;
+    let totalCarbon = carbonElec + carbonWater + carbonAir + carbonFood;
+
+    // 显示报告
+    let res = document.getElementById("result");
+    res.style.display = "block";
+    res.innerHTML = `
+        <strong>校园碳排放核算报告</strong><br>
+        用电碳排放：${carbonElec.toFixed(2)} kgCO₂<br>
+        用水碳排放：${carbonWater.toFixed(2)} kgCO₂<br>
+        空调碳排放：${carbonAir.toFixed(2)} kgCO₂<br>
+        食堂碳排放：${carbonFood.toFixed(2)} kgCO₂<br>
+        <hr>
+        <strong>校园总碳排放：${totalCarbon.toFixed(2)} kgCO₂</strong>
+    `;
+
+    // AI 建议
+    let ai = document.getElementById("aiSuggest");
+    ai.style.display = "block";
+    let suggest = "<strong>AI 智能节能方案</strong><br>";
+    if (carbonElec > 500) suggest += "• 建议更换LED节能灯具，可降低15%-30%用电碳排放<br>";
+    if (carbonAir > 300) suggest += "• 空调温度夏季调至26℃，冬季调至20℃，节能效果显著<br>";
+    if (water > 500) suggest += "• 建议安装节水龙头，定期检查管道漏水<br>";
+    if (food > 200) suggest += "• 推行光盘行动，减少餐厨垃圾可直接降低碳排<br>";
+    suggest += "• 建立师生低碳打卡激励制度，提升全校减碳参与度<br>";
+    suggest += "• 每月自动生成碳报告，用于绿色校园申报与考核";
+    ai.innerHTML = suggest;
+}
+</script>
+</body>
+</html>
